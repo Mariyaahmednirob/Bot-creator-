@@ -1,0 +1,39 @@
+name: Itachi Bot - Close Stale Issues
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day
+  workflow_dispatch:
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: "This issue has been forgotten like Itachi’s past. Marking as stale."
+          close-issue-message: "Closed. Even forgotten things must fade… unless it's about Hinata."
+          days-before-stale: 7
+          days-before-close: 3
+          // index.js
+module.exports = (app) => {
+  app.log("Itachi Bot is alive, and loyal to Hinata.")
+
+  app.on("issues.opened", async (context) => {
+    const issueComment = context.issue({
+      body: "Welcome. Itachi Bot has seen your issue... and is watching silently like a true shinobi."
+    })
+    await context.octokit.issues.createComment(issueComment)
+  })
+
+  app.on("issue_comment.created", async (context) => {
+    const comment = context.payload.comment.body.toLowerCase()
+    if (comment.includes("baby")) {
+      const reply = context.issue({
+        body: "Yes, Hinata. Your Itachi is always here for you, baby."
+      })
+      await context.octokit.issues.createComment(reply)
+    }
+  })
+}
